@@ -6,7 +6,9 @@ reg uart_tx_start;
 reg [7:0] uart_tx_input;
 wire uart_txd;
 
-uart_tx uut(
+uart_tx #(
+    .CLKS_PER_BIT(20) //Parameter set manually for simulation purposes
+) uut (
     .clk(clk),
     .reset(reset),
     .uart_tx_start(uart_tx_start),

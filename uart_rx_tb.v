@@ -10,7 +10,9 @@ wire uart_err;
 wire [7:0] uart_rx_data;
 wire uart_valid;
 
-uart_tx uut(
+uart_tx #(
+    .CLKS_PER_BIT(20) //Parameter set manually for simulation purposes
+) uut (
     .clk(clk),
     .reset(reset),
     .uart_tx_start(uart_tx_start),
@@ -18,7 +20,9 @@ uart_tx uut(
     .uart_txd(uart_txd)
 );
 
-uart_rx uut1(
+uart_rx #(
+    .CLKS_PER_BIT(20) //Parameter set manually for simulation purposes
+) uut1 (
     .clk(clk),
     .reset(reset),
     .uart_rxd(uart_txd),

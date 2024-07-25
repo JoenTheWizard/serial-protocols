@@ -1,8 +1,8 @@
 module uart_tx #(
     //Set Parameters
-    //parameter BIT_RATE     = 9600,
-    //parameter CLK_HZ       = 100000000,
-    parameter CLKS_PER_BIT = 20 //CLK_HZ / BIT_RATE
+    parameter BIT_RATE     = 9600,
+    parameter CLK_HZ       = 100000000,
+    parameter CLKS_PER_BIT = CLK_HZ / BIT_RATE
 )(
     input       clk,
     input       reset,

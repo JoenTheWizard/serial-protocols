@@ -1,8 +1,8 @@
 module uart_rx #(
     //Set Parameters
-    //parameter BIT_RATE     = 9600,
-    //parameter CLK_HZ       = 100000000,
-    parameter CLKS_PER_BIT = 20 //CLK_HZ / BIT_RATE
+    parameter BIT_RATE     = 9600,
+    parameter CLK_HZ       = 100000000,
+    parameter CLKS_PER_BIT = CLK_HZ / BIT_RATE
 )(
     input            clk,
     input            reset,
@@ -22,7 +22,6 @@ reg [1:0] state;
 //Bit counters and shift registers
 reg [3:0]  bit_idx;
 reg [15:0] bit_duration;
-//reg [7:0]  rx_data;
 
 always @(posedge clk) begin
     if (reset) begin 
@@ -30,7 +29,6 @@ always @(posedge clk) begin
         bit_duration <= 0;
         bit_idx      <= 0;
         uart_rx_data <= 8'b0;
-        //rx_data      <= 8'b0;
         uart_err     <= 0;
         uart_valid   <= 0;
     end
