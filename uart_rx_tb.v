@@ -68,6 +68,18 @@ initial begin
 
     uart_tx_start = 0;
 
+    #700
+
+    //Test case 3
+    uart_tx_input = 'hAF;
+
+    #2
+
+    uart_tx_start = 1;
+
+    #2
+
+    uart_tx_start = 0;
     #2000
 
     $finish();

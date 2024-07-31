@@ -2,7 +2,7 @@ module uart_rx #(
     //Set Parameters
     parameter BIT_RATE     = 9600,
     parameter CLK_HZ       = 100000000,
-    parameter CLKS_PER_BIT = CLK_HZ / BIT_RATE
+    parameter CLKS_PER_BIT = CLK_HZ / BIT_RATE //Parameter set manually for simulation purposes
 )(
     input            clk,
     input            reset,
@@ -11,6 +11,9 @@ module uart_rx #(
     output reg       uart_err,
     output reg       uart_valid
 );
+
+//Half cycle to sample bit
+parameter CLKS_PER_BIT_HALF = CLKS_PER_BIT / 2;
 
 //State machine states
 parameter [1:0] IDLE  = 2'b00,
@@ -44,7 +47,7 @@ always @(posedge clk) begin
             end
             START: begin
                 bit_duration <= bit_duration + 1;
-                if (bit_duration == CLKS_PER_BIT / 2) begin
+                if (bit_duration == CLKS_PER_BIT_HALF - 1) begin
                     if (uart_rxd == 1'b0) begin
                         state <= DATA;
                         bit_idx <= 0;
@@ -55,7 +58,7 @@ always @(posedge clk) begin
                 end
             end
             DATA: begin
-                if (bit_duration == CLKS_PER_BIT) begin
+                if (bit_duration == CLKS_PER_BIT - 1) begin
                     uart_rx_data[bit_idx] <= uart_rxd;
                     bit_duration <= 0;
                     bit_idx <= bit_idx + 1;
@@ -70,7 +73,7 @@ always @(posedge clk) begin
             end
             STOP: begin
                 bit_duration <= bit_duration + 1;
-                if (bit_duration == CLKS_PER_BIT) begin
+                if (bit_duration == CLKS_PER_BIT - 1) begin
                     if (uart_rxd == 1'b1) begin
                         state <= IDLE;
                         uart_valid <= 1'b1;

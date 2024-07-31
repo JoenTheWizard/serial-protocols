@@ -23,7 +23,7 @@ The bit rate and clock frequency is configurable through the `uart_rx` and `uart
 
 - In the `IDLE` state, the receiver waits until there is a low voltage or a falling edge from the UART receive data line (`uart_rxd`) to go to the `START` phase.
 
-- In the `START` state the `bit_duration` counts until `CLKS_PER_BIT / 2`. The reason as to why it gets the half of the `CLKS_PER_BIT` is to sample it, or to to get the middle of the bit to ensure that receiver is synchronized with the data being received (since there is no shared clock) as well as noise reduction (e.g. transients). Once it counts through this and the UART receive data line (`uart_rxd`) is low then move on to the `DATA` phase otherwise go to back to `IDLE` if it was an incorrect signal.
+- In the `START` state the `bit_duration` counts until `CLKS_PER_BIT / 2` (`CLKS_PER_BIT_HALF`). The reason as to why it gets the half of the `CLKS_PER_BIT` is to sample it, or to to get the middle of the bit to ensure that receiver is synchronized with the data being received (since there is no shared clock) as well as noise reduction (e.g. transients). Once it counts through this and the UART receive data line (`uart_rxd`) is low then move on to the `DATA` phase otherwise go to back to `IDLE` if it was an incorrect signal.
 
 - The `DATA` phase will then mid-bit sample each of the received data (which is from the `uart_rxd`) and store them to the `uart_rx_data` register. Remember in this case it will store 8 bits, so once it received all 8 data bits it will then move onto the `STOP` phase.
 
