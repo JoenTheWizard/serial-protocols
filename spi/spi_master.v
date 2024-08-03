@@ -8,6 +8,7 @@
 //
 //  TODO:
 //  - Create CPHA (Clock phase) parameter
+//  - Utilize MISO (Master In Slave Out) signal when receiving from slave device
 //
 //  Source(s):
 //  https://hackaday.io/project/119133-rops/log/144622-starting-with-verilog-and-spi
