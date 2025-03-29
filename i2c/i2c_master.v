@@ -49,7 +49,6 @@ always @(posedge clk) begin
             end
 
             START: begin
-                $display("Clk: ", clk_count);
                 if (clk_count == CLKS_PER_BIT_HALF) begin
                     sda_out   <= 1'b0;
                     clk_count <= clk_count + 1;
