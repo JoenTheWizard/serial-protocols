@@ -18,14 +18,16 @@ localparam IDLE         = 3'b000,
            START        = 3'b001,
            SEND_ADDRESS = 3'b010,
            SEND_DATA    = 3'b011,
-           WAIT_ACK     = 3'b100,
-           STOP         = 3'b101;
+           READ_DATA    = 3'b100,
+           WAIT_ACK     = 3'b101,
+           STOP         = 3'b110;
 
 reg [2:0] state;
 reg [3:0] bit_idx;
 reg [7:0] clk_count;
 reg [7:0] data_to_send;
 reg       sda_out;
+reg [7:0] data_to_read; //Register to store read data
 
 assign sda = (state == IDLE || state == STOP) ? 1'bz : sda_out;
 
@@ -37,6 +39,7 @@ always @(posedge clk) begin
         bit_idx      <= 4'b0;
         clk_count    <= 8'b0;
         data_to_send <= 8'b0;
+        data_to_read <= 8'b0; // Reset read data
     end else begin
         case (state)
             IDLE: begin
@@ -113,6 +116,28 @@ always @(posedge clk) begin
                 end else if (clk_count == CLKS_PER_BIT) begin
                     state <= SEND_DATA;
                     scl <= 1'b0;
+                    clk_count <= 8'b0;
+                end else begin
+                    clk_count <= clk_count + 1;
+                end
+            end
+
+            READ_DATA: begin
+                if (clk_count < CLKS_PER_BIT_HALF) begin
+                    scl       <= 1'b0; //Keep SCL low for setup time
+                    clk_count <= clk_count + 1;
+                end else if (clk_count == CLKS_PER_BIT_HALF) begin
+                    scl                  <= 1'b1; //Raise SCL for sampling SDA
+                    data_to_read[7-bit_idx] <= sda; //Sample SDA into register
+                    clk_count            <= clk_count + 1;
+                end else if (clk_count == CLKS_PER_BIT) begin
+                    if (bit_idx == 7) begin
+                        state   <= STOP; //Transition to STOP after reading all bits
+                        bit_idx <= 4'b0;
+                    end else begin
+                        bit_idx <= bit_idx + 1;
+                    end
+                    scl       <= 1'b0; //Lower SCL for next bit setup
                     clk_count <= 8'b0;
                 end else begin
                     clk_count <= clk_count + 1;
