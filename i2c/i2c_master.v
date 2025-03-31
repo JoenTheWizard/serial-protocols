@@ -29,7 +29,7 @@ reg [7:0] data_to_send;
 reg       sda_out;
 reg [7:0] data_to_read; //Register to store read data
 
-assign sda = (state == IDLE || state == STOP) ? 1'bz : sda_out;
+assign sda = (state == IDLE || state == STOP || state == READ_DATA) ? 1'bz : sda_out;
 
 always @(posedge clk) begin
     if (reset) begin
