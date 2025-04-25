@@ -5,7 +5,9 @@ module i2c_master #(
     input       clk,
     input       reset,
 
+    input [7:0] address_in,
     input [7:0] data_in,
+
     input       start_send,
 
     inout       sda,
@@ -28,6 +30,7 @@ reg [7:0] clk_count;
 reg [7:0] data_to_send;
 reg       sda_out;
 reg [7:0] data_to_read; //Register to store read data
+reg [7:0] address;
 
 assign sda = (state == IDLE || state == STOP || state == READ_DATA) ? 1'bz : sda_out;
 
@@ -39,13 +42,15 @@ always @(posedge clk) begin
         bit_idx      <= 4'b0;
         clk_count    <= 8'b0;
         data_to_send <= 8'b0;
-        data_to_read <= 8'b0; // Reset read data
+        data_to_read <= 8'b0;
+        address      <= 8'b0;
     end else begin
         case (state)
             IDLE: begin
                 if (start_send) begin
-                    state <= START;
+                    state        <= START;
                     data_to_send <= data_in;
+                    address      <= address_in;
                 end
                 scl     <= 1'b1;
                 sda_out <= 1'b1;
@@ -66,7 +71,7 @@ always @(posedge clk) begin
 
             SEND_ADDRESS: begin
                 if (clk_count < CLKS_PER_BIT_HALF) begin
-                    sda_out <= data_to_send[7-bit_idx];
+                    sda_out <= address[7-bit_idx];
                     clk_count <= clk_count + 1;
                 end else if (clk_count == CLKS_PER_BIT_HALF) begin
                     scl <= 1'b1;
