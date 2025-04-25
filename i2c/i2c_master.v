@@ -15,6 +15,10 @@ module i2c_master #(
 );
 
 //i2c master module. Currently unfinished
+//To-do:
+//  - Allow for a r/w bit
+//  - Implement for states (such as NACK)
+//  - Allow for multi-byte transmission
 
 localparam IDLE         = 3'b000,
            START        = 3'b001,
