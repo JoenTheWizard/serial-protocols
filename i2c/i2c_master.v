@@ -15,6 +15,10 @@ module i2c_master #(
 );
 
 //i2c master module. Currently unfinished
+
+//Sources:
+//  - https://www.ti.com/lit/an/slva704/slva704.pdf?ts=1745654483017
+
 //To-do:
 //  - Allow for a r/w bit
 //  - Implement for states (such as NACK)
