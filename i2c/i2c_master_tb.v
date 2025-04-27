@@ -2,8 +2,9 @@ module i2c_master_tb;
 
 reg clk;
 reg reset;
-reg [7:0] address_in;
+reg [6:0] address_in;
 reg [7:0] data_in;
+reg rw;
 reg start_send;
 wire sda;
 wire scl;
@@ -17,6 +18,7 @@ i2c_master #(
     .reset(reset),
     .address_in(address_in),
     .data_in(data_in),
+    .rw(rw),
     .start_send(start_send),
     .sda(sda),
     .scl(scl)
@@ -37,13 +39,15 @@ initial begin
     clk = 0;
     reset = 1;
     data_in = 8'h00;
+    address_in = 8'h00;
+    rw = 0; //Will just default to write
     start_send = 0;
 
     //Reset the module
     #20 reset = 0;
 
     //Test case 1: Send a byte
-    #20 address_in = 8'hB5; data_in = 8'hA2;
+    #20 address_in = 7'h67; rw = 0; data_in = 8'hA2;
     #10 start_send = 1;
     #10 start_send = 0;
 

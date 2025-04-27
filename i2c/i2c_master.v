@@ -5,8 +5,9 @@ module i2c_master #(
     input       clk,
     input       reset,
 
-    input [7:0] address_in,
+    input [6:0] address_in,
     input [7:0] data_in,
+    input       rw,
 
     input       start_send,
 
@@ -18,6 +19,7 @@ module i2c_master #(
 
 //Sources:
 //  - https://www.ti.com/lit/an/slva704/slva704.pdf?ts=1745654483017
+//  - https://www.youtube.com/watch?v=CAvawEcxoPU
 
 //To-do:
 //  - Allow for a r/w bit
@@ -38,7 +40,7 @@ reg [7:0] clk_count;
 reg [7:0] data_to_send;
 reg       sda_out;
 reg [7:0] data_to_read; //Register to store read data
-reg [7:0] address;
+reg [6:0] address;
 
 assign sda = (state == IDLE || state == STOP || state == READ_DATA) ? 1'bz : sda_out;
 
@@ -51,7 +53,7 @@ always @(posedge clk) begin
         clk_count    <= 8'b0;
         data_to_send <= 8'b0;
         data_to_read <= 8'b0;
-        address      <= 8'b0;
+        address      <= 7'b0;
     end else begin
         case (state)
             IDLE: begin
@@ -79,7 +81,7 @@ always @(posedge clk) begin
 
             SEND_ADDRESS: begin
                 if (clk_count < CLKS_PER_BIT_HALF) begin
-                    sda_out <= address[7-bit_idx];
+                    sda_out <= (bit_idx < 7) ? address[6-bit_idx] : rw;
                     clk_count <= clk_count + 1;
                 end else if (clk_count == CLKS_PER_BIT_HALF) begin
                     scl <= 1'b1;
@@ -127,7 +129,7 @@ always @(posedge clk) begin
                     scl <= 1'b1;
                     clk_count <= clk_count + 1;
                 end else if (clk_count == CLKS_PER_BIT) begin
-                    state <= SEND_DATA;
+                    state <= rw ? READ_DATA : SEND_DATA;
                     scl <= 1'b0;
                     clk_count <= 8'b0;
                 end else begin
