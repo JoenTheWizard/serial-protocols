@@ -23,7 +23,7 @@ module i2c_master #(
 
 //To-do:
 //  - Allow for a r/w bit
-//  - Implement for states (such as NACK)
+//  - Implement other states (such as NACK)
 //  - Allow for multi-byte transmission
 
 localparam IDLE         = 3'b000,
@@ -39,7 +39,7 @@ reg [3:0] bit_idx;
 reg [7:0] clk_count;
 reg [7:0] data_to_send;
 reg       sda_out;
-reg [7:0] data_to_read; //Register to store read data
+reg [7:0] data_to_read;
 reg [6:0] address;
 
 assign sda = (state == IDLE || state == STOP || state == READ_DATA) ? 1'bz : sda_out;
@@ -81,7 +81,7 @@ always @(posedge clk) begin
 
             SEND_ADDRESS: begin
                 if (clk_count < CLKS_PER_BIT_HALF) begin
-                    sda_out <= (bit_idx < 7) ? address[6-bit_idx] : rw;
+                    sda_out <= (bit_idx < 7) ? address[6-bit_idx] : rw; //Might be an unnecessary mux here?
                     clk_count <= clk_count + 1;
                 end else if (clk_count == CLKS_PER_BIT_HALF) begin
                     scl <= 1'b1;
